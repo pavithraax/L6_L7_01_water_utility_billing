@@ -1,18 +1,50 @@
+
 def sanitize_meter_id(meter_id):
+    if not isinstance(meter_id, str):
+        return ""
+
     meter_id = meter_id.strip()
+
     for ch in ['!', '@', '#', '$', '%']:
         meter_id = meter_id.replace(ch, '')
+
     return meter_id.upper()
 
+
 def parse_consumption_readings(readings_csv):
-    readings = readings_csv.split(',')
-    return [int(r) for r in readings]
+    if not isinstance(readings_csv, str) or not readings_csv.strip():
+        return []
+
+    try:
+        readings = [int(r.strip()) for r in readings_csv.split(',')]
+
+        return readings
+
+    except ValueError:
+        return []
+
 
 def format_billing_summary(account_record):
+    if not isinstance(account_record, str):
+        return "Invalid account record"
+
     parts = account_record.split(':')
+
+    if len(parts) != 3:
+        return "Invalid account record"
+
     customer_name = parts[0].strip()
-    units = int(parts[1])
+    units_text = parts[1].strip()
     zone = parts[2].strip()
+
+    if not customer_name or not zone:
+        return "Invalid account record"
+
+    try:
+        units = int(units_text)
+    except ValueError:
+        return "Invalid account record"
+
     return f"Customer {customer_name} billed {units * 2} USD in {zone}"
 
 def main():
